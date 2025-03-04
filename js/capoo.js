@@ -1,5 +1,5 @@
 function nextPage() {
-    window.location.href = "index.html"; // Điều hướng đến trang Yes
+    window.location.href = "imposter.html"; // Điều hướng đến trang Yes
 }
 
 function moveButton() {
