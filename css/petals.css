@@ -137,3 +137,36 @@
     opacity: 0;
   }
 } 
+
+/* Căn giữa nội dung và giảm kích thước font cho thiết bị di động */
+#title {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-family: 'Courier New', Courier, monospace;
+  color: white;
+  text-shadow: 0 0 20px white;
+  letter-spacing: 1px;
+}
+
+/* Media query cho màn hình nhỏ */
+@media (max-width: 768px) {
+  #title {
+    font-size: 30px; /* Giảm kích thước font cho màn hình nhỏ */
+    padding: 0 10px; /* Thêm padding cho phần chữ */
+  }
+}
+
+/* Media query cho màn hình lớn */
+@media (min-width: 769px) {
+  #title {
+    font-size: 60px; /* Giữ font-size lớn cho màn hình lớn */
+    padding: 0 30px; /* Thêm padding cho phần chữ trên màn hình lớn */
+  }
+}

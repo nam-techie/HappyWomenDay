@@ -182,3 +182,41 @@ a {
   fill: white;
   transform: scale(1.2);
 }
+
+/* Media query cho màn hình nhỏ */
+@media (max-width: 768px) {
+  .title {
+    font-size: 30px; /* Giảm font-size cho văn bản */
+    text-align: center;
+    padding: 15px;
+  }
+
+  .btn {
+    width: 100%; /* Đảm bảo button chiếm toàn bộ chiều rộng màn hình */
+    font-size: 16px;
+  }
+
+  .text {
+    font-size: 18px; /* Giảm font-size văn bản */
+    padding: 10px;
+  }
+}
+
+/* Media query cho màn hình lớn */
+@media (min-width: 768px) {
+  .title {
+    font-size: 50px; /* Tăng font-size cho văn bản */
+    text-align: center;
+    padding: 30px;
+  }
+
+  .btn {
+    width: 15em;
+    font-size: 20px;
+  }
+
+  .text {
+    font-size: 22px; /* Font cho văn bản lớn */
+    padding: 20px;
+  }
+}

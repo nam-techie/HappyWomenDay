@@ -212,6 +212,12 @@ var Clock = (function () {
     PARTICLE_NUM = 1200,
     RADIUS = Math.PI * 2;
 
+    if (window.innerWidth <= 768) {
+      textSize = 35; // Kích thước font nhỏ cho màn hình nhỏ
+    } else {
+      textSize = 60; // Kích thước font lớn cho màn hình lớn
+    }
+
   var defaultStyles = function () {
     // textSize = 36;
     // particleColor = 'rgba(226,225,142, 0.7)';
