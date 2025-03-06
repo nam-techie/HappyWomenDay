@@ -40,6 +40,7 @@ function showSadCats() {
 }
 
 // Handle countdown and page redirection
+// Handle countdown and page redirection
 function nextPage() {
     let header = document.querySelector(".header_text");
     let gifContainer = document.querySelector(".gif_container");
@@ -55,18 +56,34 @@ function nextPage() {
         <img src="images/loading-cat-3.gif" alt="Loading Cat" />
     `;
 
-    let countdown = [3, 2, 1];
-    countdown.forEach((num, index) => {
+    // Play the waiting sound
+    const waitSound = new Audio("wait-a-minutes.mp3");
+    waitSound.play();
+
+    // Gradual countdown (total duration: 9s)
+    let countdownTimes = [3, 2.5, 2, 1.8, 1.6, 1.4, 1.2, 1, 0.8, 0.6, 0.4, 0.2];
+    countdownTimes.forEach((num, index) => {
         setTimeout(() => {
-            header.innerText = num;
-        }, index * 1000);
+            header.innerText = num.toFixed(1); // Keep one decimal place
+        }, index * 750); // Adjust timing to stretch over 9s
     });
+
+    // Show "Startttt!" instead of 0
+    setTimeout(() => {
+        header.innerText = "Startttt!";
+    }, 9000);
 
     // Redirect after countdown
     setTimeout(() => {
         window.location.href = "background-night-scenery.html"; // Change this if needed
-    }, 3000);
+    }, 10500); // Added a 1.5s delay for "Startttt!" effect
 }
+
+// Update event listener for "Yes" button
+document.getElementById("yesButton").addEventListener("click", nextPage);
+
+
+
 
 // Handle button sounds
 const yesSound = new Audio("yes-button.mp3");
@@ -93,7 +110,6 @@ function changeQuestionToNo() {
 function changeQuestionToYes() {
     document.querySelector(".header_text").innerText = "Do you want to open the secret box?";
 }
-// Event Listeners
 // Event Listeners
 document.getElementById("noButton").addEventListener("mouseover", moveButton);
 document.getElementById("noButton").addEventListener("mouseover", showSadCats);
