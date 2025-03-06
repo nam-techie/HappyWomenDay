@@ -86,15 +86,27 @@ function playNoSound() {
 document.getElementById("yesButton").innerText = "Of course! I love surprises!";
 document.getElementById("noButton").innerText = "Nope! I’m too scared! 😱";
 
+function changeQuestionToNo() {
+    document.querySelector(".header_text").innerText = "Why hesitate? This could be amazing!!!!";
+}
+
+function changeQuestionToYes() {
+    document.querySelector(".header_text").innerText = "Do you want to open the secret box?";
+}
+// Event Listeners
 // Event Listeners
 document.getElementById("noButton").addEventListener("mouseover", moveButton);
 document.getElementById("noButton").addEventListener("mouseover", showSadCats);
+document.getElementById("noButton").addEventListener("mouseover", changeQuestionToNo);
 document.getElementById("noButton").addEventListener("mouseover", playNoSound);
 document.getElementById("noButton").addEventListener("click", showSadCats);
+document.getElementById("noButton").addEventListener("click", changeQuestionToNo);
 document.getElementById("noButton").addEventListener("click", playNoSound);
 
 document.getElementById("yesButton").addEventListener("mouseover", showHappyCats);
+document.getElementById("yesButton").addEventListener("mouseover", changeQuestionToYes);
 document.getElementById("yesButton").addEventListener("mouseover", playYesSound);
 document.getElementById("yesButton").addEventListener("click", showHappyCats);
 document.getElementById("yesButton").addEventListener("click", nextPage);
 document.getElementById("yesButton").addEventListener("click", playYesSound);
+
