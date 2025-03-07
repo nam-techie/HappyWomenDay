@@ -57,7 +57,7 @@ function nextPage() {
 
     // Play the waiting sound
     const waitSound = new Audio("wait-a-minutes.mp3");
-    waitSound.play();
+    waitSound.play().catch(error => console.log("Không thể phát âm thanh chờ đợi:", error));
 
     // Gradual countdown (total duration: 9s)
     let countdownTimes = [3, 2.5, 2, 1.8, 1.6, 1.4, 1.2, 1, 0.8, 0.6, 0.4, 0.2];
@@ -78,18 +78,52 @@ function nextPage() {
     }, 10500); // Added a 1.5s delay for "Startttt!" effect
 }
 
-// Handle button sounds
+// Tạo sẵn đối tượng Audio để tránh vấn đề với autoplay
 const yesSound = new Audio("yes-button.mp3");
 const noSound = new Audio("no-button.mp3");
 
+// Kiểm tra xem âm thanh đã được tải chưa
+yesSound.addEventListener('canplaythrough', () => {
+    console.log("Âm thanh Yes đã sẵn sàng");
+});
+
+noSound.addEventListener('canplaythrough', () => {
+    console.log("Âm thanh No đã sẵn sàng");
+});
+
+// Xử lý lỗi nếu không tải được âm thanh
+yesSound.addEventListener('error', () => {
+    console.error("Không thể tải âm thanh Yes");
+});
+
+noSound.addEventListener('error', () => {
+    console.error("Không thể tải âm thanh No");
+});
+
 function playYesSound() {
+    console.log("Đang phát âm thanh Yes");
     yesSound.currentTime = 0;
-    yesSound.play();
+    yesSound.play().catch(error => {
+        console.error("Không thể phát âm thanh Yes:", error);
+        // Thử phát lại sau khi người dùng tương tác
+        document.addEventListener('click', function playOnClick() {
+            yesSound.play();
+            document.removeEventListener('click', playOnClick);
+        }, { once: true });
+    });
 }
 
 function playNoSound() {
+    console.log("Đang phát âm thanh No");
     noSound.currentTime = 0;
-    noSound.play();
+    noSound.play().catch(error => {
+        console.error("Không thể phát âm thanh No:", error);
+        // Thử phát lại sau khi người dùng tương tác
+        document.addEventListener('click', function playOnClick() {
+            noSound.play();
+            document.removeEventListener('click', playOnClick);
+        }, { once: true });
+    });
 }
 
 function changeQuestionToNo() {
@@ -126,29 +160,57 @@ function setupEventListeners() {
     const newYesButton = document.getElementById("yesButton");
     
     // Cả thiết bị di động và máy tính: Nút No chỉ phản ứng khi click
-    newNoButton.addEventListener("click", moveButton);
-    newNoButton.addEventListener("click", showSadCats);
-    newNoButton.addEventListener("click", changeQuestionToNo);
-    newNoButton.addEventListener("click", playNoSound);
+    newNoButton.addEventListener("click", function() {
+        console.log("Nút No được nhấn");
+        moveButton();
+        showSadCats();
+        changeQuestionToNo();
+        playNoSound();
+    });
     
     if (isMobileDevice()) {
         // Thiết bị di động: Nút Yes chỉ phản ứng khi click
-        newYesButton.addEventListener("click", showHappyCats);
-        newYesButton.addEventListener("click", changeQuestionToYes);
-        newYesButton.addEventListener("click", playYesSound);
-        newYesButton.addEventListener("click", nextPage);
+        newYesButton.addEventListener("click", function() {
+            console.log("Nút Yes được nhấn (mobile)");
+            showHappyCats();
+            changeQuestionToYes();
+            playYesSound();
+            nextPage();
+        });
     } else {
         // Máy tính: Nút Yes phản ứng khi click và mouseover
-        newYesButton.addEventListener("click", showHappyCats);
-        newYesButton.addEventListener("click", changeQuestionToYes);
-        newYesButton.addEventListener("click", playYesSound);
-        newYesButton.addEventListener("click", nextPage);
+        newYesButton.addEventListener("click", function() {
+            console.log("Nút Yes được nhấn (desktop)");
+            showHappyCats();
+            changeQuestionToYes();
+            playYesSound();
+            nextPage();
+        });
         
         // Thêm hiệu ứng hover cho nút Yes trên máy tính
-        newYesButton.addEventListener("mouseover", showHappyCats);
-        newYesButton.addEventListener("mouseover", changeQuestionToYes);
-        newYesButton.addEventListener("mouseover", playYesSound);
+        newYesButton.addEventListener("mouseover", function() {
+            console.log("Hover trên nút Yes");
+            showHappyCats();
+            changeQuestionToYes();
+            playYesSound();
+        });
     }
+    
+    // Thêm sự kiện click vào document để cho phép phát âm thanh
+    // (Nhiều trình duyệt yêu cầu tương tác người dùng trước khi cho phép phát âm thanh)
+    document.addEventListener('click', function initAudio() {
+        // Tạo âm thanh tạm thời và phát nó (âm lượng = 0)
+        const tempSound = new Audio();
+        tempSound.volume = 0;
+        tempSound.play().then(() => {
+            console.log("Âm thanh đã được kích hoạt");
+        }).catch(error => {
+            console.log("Vẫn chưa thể phát âm thanh:", error);
+        });
+        
+        // Chỉ thực hiện một lần
+        document.removeEventListener('click', initAudio);
+    });
 }
 
 // Thiết lập event listeners khi trang được tải

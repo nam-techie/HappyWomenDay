@@ -214,12 +214,6 @@ var Clock = (function () {
     PARTICLE_NUM = 1200,
     RADIUS = Math.PI * 2;
 
-    if (window.innerWidth <= 768) {
-      textSize = 40; // Tăng kích thước font cho màn hình nhỏ
-    } else {
-      textSize = 70; // Tăng kích thước font cho màn hình lớn
-    }
-
   var defaultStyles = function () {
     // textSize = 36;
     // particleColor = 'rgba(226,225,142, 0.7)';
@@ -227,7 +221,7 @@ var Clock = (function () {
 
   var draw = function (p) {
     // Tăng độ mờ của các hạt đom đóm lên để văn bản hiển thị rõ ràng hơn
-    ctx.fillStyle = "rgba(226,225,142, " + (p.opacity * 1.5) + ")";
+    ctx.fillStyle = "rgba(226,225,142, " + (p.opacity) + ")";
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.size * 1.2, 0, RADIUS, true);
     ctx.closePath();
@@ -238,39 +232,15 @@ var Clock = (function () {
     ctx.clearRect(0, 0, width, height);
     // textSize = 36;
 
-    // Vẽ văn bản với bóng đổ để nổi bật hơn trên nền
     ctx.fillStyle = "rgb(255, 255, 255)";
     ctx.textBaseline = "middle";
     ctx.font =
-      "bold " + textSize + "px 'Avenir', 'Helvetica Neue', 'Arial', 'sans-serif'";
-    
-    // Thêm bóng đổ cho văn bản
-    ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
-    ctx.shadowBlur = 15;
-    ctx.shadowOffsetX = 3;
-    ctx.shadowOffsetY = 3;
-    
-    // Vẽ viền đen trước để tạo hiệu ứng outline
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
-    ctx.lineWidth = 6;
-    ctx.strokeText(
-      text,
-      (width - ctx.measureText(text).width) * 0.5,
-      height * 0.5
-    );
-    
-    // Sau đó vẽ văn bản màu trắng
+      textSize + "px 'Avenir', 'Helvetica Neue', 'Arial', 'sans-serif'";
     ctx.fillText(
       text,
       (width - ctx.measureText(text).width) * 0.5,
       height * 0.5
     );
-    
-    // Tắt bóng đổ sau khi vẽ văn bản
-    ctx.shadowColor = "transparent";
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
 
     var imgData = ctx.getImageData(0, 0, width, height);
 
@@ -335,7 +305,7 @@ var Clock = (function () {
           if (newSize > p.origSize && newSize > 0) {
             p.size = newSize;
           } else {
-            p.size = m.origSize;
+            p.size = p.origSize;
           }
         }
       } catch (e) {}
@@ -374,8 +344,8 @@ var Clock = (function () {
     // width = window.innerWidth;
     // height = window.innerHeight;
 
-    canvas.width = window.innerWidth >= 1000 ? 1000 : width;
-    canvas.height = window.innerHeight >= 200 ? 200 : height;
+    canvas.width = window.innerWidth >= 1400 ? 1400 : width;
+    canvas.height = window.innerHeight >= 400 ? 400 : height;
 
     width = canvas.width;
     height = canvas.height;
