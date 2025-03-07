@@ -215,9 +215,9 @@ var Clock = (function () {
     RADIUS = Math.PI * 2;
 
     if (window.innerWidth <= 768) {
-      textSize = 35; // Kích thước font nhỏ cho màn hình nhỏ
+      textSize = 40; // Tăng kích thước font cho màn hình nhỏ
     } else {
-      textSize = 60; // Kích thước font lớn cho màn hình lớn
+      textSize = 70; // Tăng kích thước font cho màn hình lớn
     }
 
   var defaultStyles = function () {
@@ -226,9 +226,10 @@ var Clock = (function () {
   };
 
   var draw = function (p) {
-    ctx.fillStyle = "rgba(226,225,142, " + p.opacity + ")";
+    // Tăng độ mờ của các hạt đom đóm lên để văn bản hiển thị rõ ràng hơn
+    ctx.fillStyle = "rgba(226,225,142, " + (p.opacity * 1.5) + ")";
     ctx.beginPath();
-    ctx.arc(p.x, p.y, p.size, 0, RADIUS, true);
+    ctx.arc(p.x, p.y, p.size * 1.2, 0, RADIUS, true);
     ctx.closePath();
     ctx.fill();
   };
@@ -237,15 +238,39 @@ var Clock = (function () {
     ctx.clearRect(0, 0, width, height);
     // textSize = 36;
 
+    // Vẽ văn bản với bóng đổ để nổi bật hơn trên nền
     ctx.fillStyle = "rgb(255, 255, 255)";
     ctx.textBaseline = "middle";
     ctx.font =
-      textSize + "px 'Avenir', 'Helvetica Neue', 'Arial', 'sans-serif'";
+      "bold " + textSize + "px 'Avenir', 'Helvetica Neue', 'Arial', 'sans-serif'";
+    
+    // Thêm bóng đổ cho văn bản
+    ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
+    ctx.shadowBlur = 15;
+    ctx.shadowOffsetX = 3;
+    ctx.shadowOffsetY = 3;
+    
+    // Vẽ viền đen trước để tạo hiệu ứng outline
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
+    ctx.lineWidth = 6;
+    ctx.strokeText(
+      text,
+      (width - ctx.measureText(text).width) * 0.5,
+      height * 0.5
+    );
+    
+    // Sau đó vẽ văn bản màu trắng
     ctx.fillText(
       text,
       (width - ctx.measureText(text).width) * 0.5,
       height * 0.5
     );
+    
+    // Tắt bóng đổ sau khi vẽ văn bản
+    ctx.shadowColor = "transparent";
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
 
     var imgData = ctx.getImageData(0, 0, width, height);
 
@@ -405,6 +430,12 @@ var Clock = (function () {
       document.addEventListener(
         "click",
         function () {
+          // Ẩn container văn bản khi người dùng nhấp vào màn hình
+          var textContainer = document.getElementById('text-container');
+          if (textContainer) {
+            textContainer.style.display = 'none';
+          }
+          
           textNum++;
           if (textNum >= texts.length) {
             textNum = texts.length - 1; // Dừng lại ở dòng cuối cùng
@@ -460,7 +491,7 @@ var Particle = function (canvas) {
   this.inText = false;
 
   this.opacity = 0;
-  this.do = 0.02;
+  this.do = 0.05; // Tăng tốc độ hiển thị của các hạt đom đóm
 
   this.opacityTresh = 0.98;
   this.fadingOut = true;
@@ -477,7 +508,7 @@ var Particle = function (canvas) {
   this.fadeOut = function () {
     this.fadingOut = this.opacity < 0 ? false : true;
     if (this.fadingOut) {
-      this.opacity -= 0.06;
+      this.opacity -= 0.04; // Giảm tốc độ mờ đi để văn bản hiển thị lâu hơn
       if (this.opacity < 0) {
         this.opacity = 0;
       }

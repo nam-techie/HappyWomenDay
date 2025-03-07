@@ -40,7 +40,6 @@ function showSadCats() {
 }
 
 // Handle countdown and page redirection
-// Handle countdown and page redirection
 function nextPage() {
     let header = document.querySelector(".header_text");
     let gifContainer = document.querySelector(".gif_container");
@@ -79,12 +78,6 @@ function nextPage() {
     }, 10500); // Added a 1.5s delay for "Startttt!" effect
 }
 
-// Update event listener for "Yes" button
-document.getElementById("yesButton").addEventListener("click", nextPage);
-
-
-
-
 // Handle button sounds
 const yesSound = new Audio("yes-button.mp3");
 const noSound = new Audio("no-button.mp3");
@@ -98,10 +91,6 @@ function playNoSound() {
     noSound.currentTime = 0;
     noSound.play();
 }
-
-// Set fixed button texts
-document.getElementById("yesButton").innerText = "Of course! I love surprises!";
-document.getElementById("noButton").innerText = "Nope! I'm too scared! 😱";
 
 function changeQuestionToNo() {
     document.querySelector(".header_text").innerText = "Why hesitate? This could be amazing!!!!";
@@ -121,6 +110,10 @@ function isMobileDevice() {
 
 // Thiết lập các sự kiện dựa trên loại thiết bị
 function setupEventListeners() {
+    // Thiết lập nội dung nút
+    document.getElementById("yesButton").innerText = "Of course! I love surprises!";
+    document.getElementById("noButton").innerText = "Nope! I'm too scared! 😱";
+    
     const noButton = document.getElementById("noButton");
     const yesButton = document.getElementById("yesButton");
     
@@ -145,13 +138,16 @@ function setupEventListeners() {
         newYesButton.addEventListener("click", playYesSound);
         newYesButton.addEventListener("click", nextPage);
     } else {
-        // Máy tính: Nút Yes phản ứng khi mouseover và click
+        // Máy tính: Nút Yes phản ứng khi click và mouseover
+        newYesButton.addEventListener("click", showHappyCats);
+        newYesButton.addEventListener("click", changeQuestionToYes);
+        newYesButton.addEventListener("click", playYesSound);
+        newYesButton.addEventListener("click", nextPage);
+        
+        // Thêm hiệu ứng hover cho nút Yes trên máy tính
         newYesButton.addEventListener("mouseover", showHappyCats);
         newYesButton.addEventListener("mouseover", changeQuestionToYes);
         newYesButton.addEventListener("mouseover", playYesSound);
-        newYesButton.addEventListener("click", showHappyCats);
-        newYesButton.addEventListener("click", nextPage);
-        newYesButton.addEventListener("click", playYesSound);
     }
 }
 
