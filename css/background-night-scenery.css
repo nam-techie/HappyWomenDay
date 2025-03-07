@@ -122,17 +122,22 @@ no-repeat center center{
     transform: rotate(-12deg);
     -webkit-transform: rotate(-12deg);
     font-size: 12px;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .txt {
-    color: hsla(0, 0%, 0%, 0);
-    text-shadow: #fff 0 0 10px;
+    color: #ffffff;
+    text-shadow: 0 0 15px #fff, 0 0 20px #fff;
     transition: text-shadow 2s cubic-bezier(0, 1, 0, 1);
+    font-weight: bold;
 }
 
 @-moz-document url-prefix() {
     .txt {
-        text-shadow: #fff 0 0 20px;
+        text-shadow: 0 0 20px #fff, 0 0 25px #fff;
     }
 }
 
@@ -169,5 +174,7 @@ no-repeat center center{
 
 #canvas{
     margin: 200px auto;
+    position: relative;
+    z-index: 10;
 }
 

@@ -101,7 +101,7 @@ function playNoSound() {
 
 // Set fixed button texts
 document.getElementById("yesButton").innerText = "Of course! I love surprises!";
-document.getElementById("noButton").innerText = "Nope! I’m too scared! 😱";
+document.getElementById("noButton").innerText = "Nope! I'm too scared! 😱";
 
 function changeQuestionToNo() {
     document.querySelector(".header_text").innerText = "Why hesitate? This could be amazing!!!!";
@@ -110,19 +110,54 @@ function changeQuestionToNo() {
 function changeQuestionToYes() {
     document.querySelector(".header_text").innerText = "Do you want to open the secret box?";
 }
-// Event Listeners
-document.getElementById("noButton").addEventListener("mouseover", moveButton);
-document.getElementById("noButton").addEventListener("mouseover", showSadCats);
-document.getElementById("noButton").addEventListener("mouseover", changeQuestionToNo);
-document.getElementById("noButton").addEventListener("mouseover", playNoSound);
-document.getElementById("noButton").addEventListener("click", showSadCats);
-document.getElementById("noButton").addEventListener("click", changeQuestionToNo);
-document.getElementById("noButton").addEventListener("click", playNoSound);
 
-document.getElementById("yesButton").addEventListener("mouseover", showHappyCats);
-document.getElementById("yesButton").addEventListener("mouseover", changeQuestionToYes);
-document.getElementById("yesButton").addEventListener("mouseover", playYesSound);
-document.getElementById("yesButton").addEventListener("click", showHappyCats);
-document.getElementById("yesButton").addEventListener("click", nextPage);
-document.getElementById("yesButton").addEventListener("click", playYesSound);
+// Kiểm tra xem người dùng đang sử dụng thiết bị di động hay không
+function isMobileDevice() {
+    return (window.innerWidth <= 600) || 
+           ('ontouchstart' in window) || 
+           (navigator.maxTouchPoints > 0) || 
+           (navigator.msMaxTouchPoints > 0);
+}
+
+// Thiết lập các sự kiện dựa trên loại thiết bị
+function setupEventListeners() {
+    const noButton = document.getElementById("noButton");
+    const yesButton = document.getElementById("yesButton");
+    
+    // Xóa tất cả event listeners hiện tại (để tránh trùng lặp khi gọi lại hàm này)
+    noButton.replaceWith(noButton.cloneNode(true));
+    yesButton.replaceWith(yesButton.cloneNode(true));
+    
+    // Lấy lại reference sau khi clone
+    const newNoButton = document.getElementById("noButton");
+    const newYesButton = document.getElementById("yesButton");
+    
+    // Cả thiết bị di động và máy tính: Nút No chỉ phản ứng khi click
+    newNoButton.addEventListener("click", moveButton);
+    newNoButton.addEventListener("click", showSadCats);
+    newNoButton.addEventListener("click", changeQuestionToNo);
+    newNoButton.addEventListener("click", playNoSound);
+    
+    if (isMobileDevice()) {
+        // Thiết bị di động: Nút Yes chỉ phản ứng khi click
+        newYesButton.addEventListener("click", showHappyCats);
+        newYesButton.addEventListener("click", changeQuestionToYes);
+        newYesButton.addEventListener("click", playYesSound);
+        newYesButton.addEventListener("click", nextPage);
+    } else {
+        // Máy tính: Nút Yes phản ứng khi mouseover và click
+        newYesButton.addEventListener("mouseover", showHappyCats);
+        newYesButton.addEventListener("mouseover", changeQuestionToYes);
+        newYesButton.addEventListener("mouseover", playYesSound);
+        newYesButton.addEventListener("click", showHappyCats);
+        newYesButton.addEventListener("click", nextPage);
+        newYesButton.addEventListener("click", playYesSound);
+    }
+}
+
+// Thiết lập event listeners khi trang được tải
+window.addEventListener("load", setupEventListeners);
+
+// Thiết lập lại event listeners khi kích thước màn hình thay đổi
+window.addEventListener("resize", setupEventListeners);
 
