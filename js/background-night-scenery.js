@@ -423,6 +423,8 @@ var Clock = (function () {
                   countIndex++;
                 } else {
                   clearInterval(countdownInterval); // Dừng đếm ngược
+                  // Lưu trạng thái đã tương tác vào sessionStorage
+                  sessionStorage.setItem('userInteracted', 'true');
                   window.location.href = "imposter.html"; // Chuyển trang ngay khi số 1 xuất hiện
                 }
               }, 1000); // Hiển thị mỗi số trong 1 giây
