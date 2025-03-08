@@ -18,6 +18,27 @@ var cometColor = "226,225,224";
 var canva = document.getElementById("universe");
 var stars = [];
 
+// Mảng các văn bản sẽ hiển thị
+var texts = [
+  "Hiluuuu!",
+  "Hôm nay là ngày của cậu",
+  "Chúc 8/3 vui vẻ nha",
+  "Hạnh phúc nhé ",
+  "Luôn được yêu thương",
+  "Ngưng khóc nhee",
+  "Hãy cười nhiều lên",
+  "Tỏa sáng rực rỡ!",
+  "Gặp nhiều may mắn",
+  "Và luôn xinh đẹp nhéeee!",
+  "Hết rồiiiiiiiii",
+  "Không còn gì nữa đâu",
+  "Waittttt!",
+  "Đùa đấyyyyy",
+  "Còn một bất ngờ nữa...",
+];
+var currentTextIndex = 0;
+var textDisplay;
+
 windowResizeHandler();
 window.addEventListener("resize", windowResizeHandler, false);
 
@@ -32,6 +53,103 @@ function createUniverse() {
   }
 
   draw();
+  
+  // Khởi tạo hiển thị văn bản
+  initTextDisplay();
+}
+
+// Hàm khởi tạo hiển thị văn bản
+function initTextDisplay() {
+  textDisplay = document.getElementById("text-display");
+  
+  // Thiết lập văn bản đầu tiên
+  updateTextDisplay(texts[currentTextIndex]);
+  
+  // Thêm sự kiện click để chuyển đổi văn bản
+  document.addEventListener("click", handleTextChange);
+  
+  // Thêm animation nhấp nháy cho văn bản
+  textDisplay.style.animation = "glow 3s infinite";
+}
+
+// Xử lý sự kiện khi người dùng nhấp vào để thay đổi văn bản
+function handleTextChange() {
+  // Phát âm thanh khi người dùng nhấp vào
+  var mp3 = document.getElementById("myAudio");
+  if (mp3) {
+    mp3.muted = false;
+    mp3.play().catch(error => console.log("Play error:", error));
+  }
+  
+  // Chuyển đến văn bản tiếp theo
+  currentTextIndex++;
+  
+  if (currentTextIndex >= texts.length) {
+    currentTextIndex = texts.length - 1; // Dừng lại ở dòng cuối cùng
+    
+    // Hiển thị dòng "Còn một bất ngờ nữa..."
+    updateTextDisplay("Còn một bất ngờ nữa...");
+    
+    setTimeout(function() {
+      // Đếm ngược từ 3, 2, 1
+      let countdown = ["3", "2", "1"];
+      let countIndex = 0;
+      
+      let countdownInterval = setInterval(function() {
+        if (countIndex < countdown.length) {
+          updateTextDisplay(countdown[countIndex]); // Hiển thị số đếm ngược
+          countIndex++;
+        } else {
+          clearInterval(countdownInterval); // Dừng đếm ngược
+          // Lưu trạng thái đã tương tác vào sessionStorage
+          sessionStorage.setItem('userInteracted', 'true');
+          window.location.href = "imposter.html"; // Chuyển trang ngay khi số 1 xuất hiện
+        }
+      }, 1000); // Hiển thị mỗi số trong 1 giây
+    }, 1000); // Chờ 1 giây sau khi dòng "Còn một bất ngờ nữa..." xuất hiện
+    
+    return;
+  }
+  
+  // Cập nhật văn bản hiển thị
+  updateTextDisplay(texts[currentTextIndex]);
+}
+
+// Hàm cập nhật văn bản hiển thị với hiệu ứng
+function updateTextDisplay(text) {
+  // Đặt lại opacity để tạo hiệu ứng fade in
+  textDisplay.style.opacity = 0;
+  
+  // Cập nhật kích thước chữ dựa trên độ dài văn bản và kích thước màn hình
+  var fontSize = calculateFontSize(text);
+  textDisplay.style.fontSize = fontSize + "px";
+  
+  // Cập nhật nội dung văn bản
+  setTimeout(function() {
+    textDisplay.textContent = text;
+    // Hiển thị văn bản với hiệu ứng fade in
+    textDisplay.style.opacity = 1;
+  }, 300);
+}
+
+// Hàm tính toán kích thước chữ dựa trên độ dài văn bản và kích thước màn hình
+function calculateFontSize(text) {
+  var screenWidth = window.innerWidth;
+  var textLength = text.length;
+  
+  if (screenWidth <= 480) {
+    // Điện thoại
+    return Math.min(30, 400 / (textLength * 0.8));
+  } else if (screenWidth <= 768) {
+    // Tablet nhỏ
+    return Math.min(40, 600 / (textLength * 0.8));
+  } else if (screenWidth <= 1024) {
+    // Tablet lớn
+    return Math.min(50, 800 / (textLength * 0.7));
+  } else {
+    // Laptop và màn hình lớn
+    return Math.min(60, screenWidth / (textLength * 0.7));
+  }
 }
 
 function draw() {
@@ -154,7 +272,6 @@ function windowResizeHandler() {
   width = window.innerWidth;
   height = window.innerHeight;
   starCount = width * starDensity;
-  // console.log(starCount)
   circleRadius = width > height ? height / 2 : width / 2;
   circleCenter = {
     x: width / 2,
@@ -163,397 +280,11 @@ function windowResizeHandler() {
 
   canva.setAttribute("width", width);
   canva.setAttribute("height", height);
-}
-
-var Clock = (function () {
-  var canvas,
-    ctx,
-    bgGrad = true,
-    gradient,
-    height = 400,
-    key = {
-      up: false,
-      shift: false,
-    },
-    particles = [],
-    // particleColor = 'hsla(0, 0%, 100%, 0.3)',
-    mouse = {
-      x: 0,
-      y: 0,
-    },
-    press = false,
-    quiver = true,
-    texts = [
-      "Hiluuuu!",
-      "Hôm nay là ngày của cậu",
-      "Chúc 8/3 vui vẻ nha",
-      "Hạnh phúc ",
-      "Được yêu thương",
-      "Ngừng khóc nhè",
-      "Cười nhiều lên",
-      "Tỏa sáng rực rỡ!",
-      "Gặp nhiều may mắn",
-      "Luôn xinh đẹp nhé!",
-      "Hết rồiiiiiiiii",
-      "Không còn gì nữa đâu",
-      "Waittttt!",
-      "Đùa đấyyyyy",
-      "Còn một bất ngờ nữa...",
-    ],
-    text = texts[0],
-    textNum = 0,
-    textSize = 60,
-    valentine = false,
-    msgTime = 100,
-    updateColor = true,
-    width = 420;
-
-  var FRAME_RATE = 60,
-    MIN_WIDTH = 0,
-    MIN_HEIGHT = 0,
-    PARTICLE_NUM = 1200,
-    RADIUS = Math.PI * 2;
-
-  var defaultStyles = function () {
-    // textSize = 36;
-    // particleColor = 'rgba(226,225,142, 0.7)';
-  };
-
-  var draw = function (p) {
-    // Tăng độ mờ của các hạt đom đóm lên để văn bản hiển thị rõ ràng hơn
-    ctx.fillStyle = "rgba(226,225,142, " + (p.opacity) + ")";
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.size * 1.2, 0, RADIUS, true);
-    ctx.closePath();
-    ctx.fill();
-  };
-
-  var loop = function () {
-    ctx.clearRect(0, 0, width, height);
-    
-    // Cập nhật kích thước chữ dựa trên văn bản hiện tại
-    textSize = calculateTextSize();
-
-    ctx.fillStyle = "rgb(255, 255, 255)";
-    ctx.textBaseline = "middle";
-    ctx.font =
-      textSize + "px 'Avenir', 'Helvetica Neue', 'Arial', 'sans-serif'";
-    ctx.fillText(
-      text,
-      (width - ctx.measureText(text).width) * 0.5,
-      height * 0.5
-    );
-
-    var imgData = ctx.getImageData(0, 0, width, height);
-
-    ctx.clearRect(0, 0, width, height);
-
-    for (var i = 0, l = particles.length; i < l; i++) {
-      var p = particles[i];
-      p.inText = false;
-    }
-    particleText(imgData);
-  };
-
-  var pad = function (number) {
-    return ("0" + number).substr(-2);
-  };
-
-  var particleText = function (imgData) {
-    var pxls = [];
-    for (var w = width; w > 0; w -= 3) {
-      for (var h = 0; h < width; h += 3) {
-        var index = (w + h * width) * 4;
-        if (imgData.data[index] > 1) {
-          pxls.push([w, h]);
-        }
-      }
-    }
-
-    var count = pxls.length;
-    var j = parseInt((particles.length - pxls.length) / 2, 10);
-    if (j < 0) {
-      j = 0;
-    }
-
-    for (var i = 0; i < pxls.length && j < particles.length; i++, j++) {
-      try {
-        var p = particles[j],
-          X,
-          Y;
-
-        if (quiver) {
-          X = pxls[count - 1][0] - (p.px + Math.random() * 5);
-          Y = pxls[count - 1][1] - (p.py + Math.random() * 5);
-        } else {
-          X = pxls[count - 1][0] - p.px;
-          Y = pxls[count - 1][1] - p.py;
-        }
-        var T = Math.sqrt(X * X + Y * Y);
-        var A = Math.atan2(Y, X);
-        var C = Math.cos(A);
-        var S = Math.sin(A);
-        p.x = p.px + C * T * p.delta;
-        p.y = p.py + S * T * p.delta;
-        p.px = p.x;
-        p.py = p.y;
-        p.inText = true;
-        p.fadeIn();
-        draw(p);
-        if (key.up === true) {
-          p.size += 0.3;
-        } else {
-          var newSize = p.size - 0.5;
-          if (newSize > p.origSize && newSize > 0) {
-            p.size = newSize;
-          } else {
-            p.size = p.origSize;
-          }
-        }
-      } catch (e) {}
-      count--;
-    }
-    for (var i = 0; i < particles.length; i++) {
-      var p = particles[i];
-      if (!p.inText) {
-        // p.px = p.mx;
-        // p.py = p.my;
-        // p.opacity = 1;
-        p.fadeOut();
-
-        var X = p.mx - p.px;
-        Y = p.my - p.py;
-
-        var T = Math.sqrt(X * X + Y * Y);
-
-        var A = Math.atan2(Y, X);
-
-        var C = Math.cos(A);
-
-        var S = Math.sin(A);
-
-        p.x = p.px + (C * T * p.delta) / 2;
-        p.y = p.py + (S * T * p.delta) / 2;
-        p.px = p.x;
-        p.py = p.y;
-
-        draw(p);
-      }
-    }
-  };
-
-  var setDimensions = function () {
-    // Điều chỉnh kích thước canvas theo kích thước màn hình
-    var screenWidth = window.innerWidth;
-    var screenHeight = window.innerHeight;
-    
-    // Đặt kích thước tối đa cho canvas
-    var maxWidth = 1400;
-    var maxHeight = 500;
-    
-    // Tính toán kích thước canvas dựa trên kích thước màn hình
-    width = screenWidth > maxWidth ? maxWidth : screenWidth;
-    height = Math.min(screenHeight * 0.6, maxHeight); // Sử dụng 60% chiều cao màn hình hoặc chiều cao tối đa
-    
-    canvas.width = width;
-    canvas.height = height;
-    
-    // Cập nhật kích thước chữ khi kích thước màn hình thay đổi
-    textSize = calculateTextSize();
-
-    // Điều chỉnh vị trí canvas
-    canvas.style.position = "absolute";
-    canvas.style.left = "0px";
-    canvas.style.top = "0px";
-    canvas.style.bottom = "0px";
-    canvas.style.right = "0px";
-    canvas.style.marginTop = screenHeight * 0.15 + "px";
-    
-    // Căn giữa canvas nếu kích thước màn hình lớn hơn kích thước tối đa
-    if (screenWidth > maxWidth) {
-      canvas.style.left = "50%";
-      canvas.style.transform = "translateX(-50%)";
-    }
-  };
-
-  var setGradient = function (gradientStops) {
-    gradient = ctx.createRadialGradient(
-      width / 2,
-      height / 2,
-      0,
-      width / 2,
-      height / 2,
-      width
-    );
-
-    for (var position in gradientStops) {
-      var color = gradientStops[position];
-      gradient.addColorStop(position, color);
-    }
-  };
-
-  // Thêm hàm để tính toán kích thước chữ dựa trên kích thước màn hình
-  var calculateTextSize = function() {
-    var screenWidth = window.innerWidth;
-    var textLength = text.length;
-    
-    // Điều chỉnh kích thước chữ theo kích thước màn hình và độ dài văn bản
-    if (screenWidth <= 480) {
-      // Điện thoại
-      return Math.min(30, 480 / (textLength * 0.7));
-    } else if (screenWidth <= 768) {
-      // Tablet nhỏ
-      return Math.min(40, 768 / (textLength * 0.7));
-    } else if (screenWidth <= 1024) {
-      // Tablet lớn
-      return Math.min(50, 1024 / (textLength * 0.6));
-    } else {
-      // Laptop và màn hình lớn
-      return Math.min(60, width / (textLength * 0.6));
-    }
-  };
-
-  /**
-   * Public Methods
-   */
-  return {
-    init: function (canvasID) {
-      canvas = document.getElementById(canvasID);
-      if (canvas === null || !canvas.getContext) {
-        return;
-      }
-      ctx = canvas.getContext("2d");
-      setDimensions();
-      this.event();
-
-      // Thiết lập kích thước chữ ban đầu dựa trên kích thước màn hình
-      textSize = calculateTextSize();
-
-      for (var i = 0; i < PARTICLE_NUM; i++) {
-        particles[i] = new Particle(canvas);
-      }
-
-      setInterval(loop, FRAME_RATE);
-    },
-
-    event: function () {
-      var end = false;
-      console.log(texts.length);
-      
-      // Thêm sự kiện resize để cập nhật kích thước chữ khi thay đổi kích thước màn hình
-      window.addEventListener('resize', function() {
-        textSize = calculateTextSize();
-      }, false);
-      
-      document.addEventListener(
-        "click",
-        function () {
-          // Ẩn container văn bản khi người dùng nhấp vào màn hình
-          var textContainer = document.getElementById('text-container');
-          if (textContainer) {
-            textContainer.style.display = 'none';
-          }
-          
-          textNum++;
-          if (textNum >= texts.length) {
-            textNum = texts.length - 1; // Dừng lại ở dòng cuối cùng
-      
-            // Hiển thị dòng "Còn một bất ngờ nữa..."
-            text = "Còn một bất ngờ nữa...";
-            // Cập nhật kích thước chữ khi văn bản thay đổi
-            textSize = calculateTextSize();
-            
-            setTimeout(function () {
-              // Đếm ngược từ 3, 2, 1
-              let countdown = ["3", "2", "1"];
-              let countIndex = 0;
-      
-              let countdownInterval = setInterval(function () {
-                if (countIndex < countdown.length) {
-                  text = countdown[countIndex]; // Hiển thị số đếm ngược
-                  // Cập nhật kích thước chữ khi văn bản thay đổi
-                  textSize = calculateTextSize();
-                  countIndex++;
-                } else {
-                  clearInterval(countdownInterval); // Dừng đếm ngược
-                  // Lưu trạng thái đã tương tác vào sessionStorage
-                  sessionStorage.setItem('userInteracted', 'true');
-                  window.location.href = "imposter.html"; // Chuyển trang ngay khi số 1 xuất hiện
-                }
-              }, 1000); // Hiển thị mỗi số trong 1 giây
-            }, 1000); // Chờ 1.5 giây sau khi dòng "Còn một bất ngờ nữa..." xuất hiện
-            return;
-          }
-          text = texts[textNum];
-          // Cập nhật kích thước chữ khi văn bản thay đổi
-          textSize = calculateTextSize();
-        },
-        false
-      );
-    },
-  };
-})();
-
-var Particle = function (canvas) {
-  var range = (Math.random() * 180) / Math.PI,
-    spread = canvas.height / 4,
-    size = Math.random() * 1.2;
-
-  this.delta = 0.15;
-  this.x = 0;
-  this.y = 0;
-
-  this.px = canvas.width / 2 + (Math.random() - 0.5) * canvas.width;
-  this.py = canvas.height * 0.5 + (Math.random() - 0.5) * spread;
-
-  this.mx = this.px;
-  this.my = this.py;
-
-  this.velocityX = Math.floor(Math.random() * 10) - 5;
-  this.velocityY = Math.floor(Math.random() * 10) - 5;
-
-  this.size = size;
-  this.origSize = size;
-
-  this.inText = false;
-
-  this.opacity = 0;
-  this.do = 0.05; // Tăng tốc độ hiển thị của các hạt đom đóm
-
-  this.opacityTresh = 0.98;
-  this.fadingOut = true;
-  this.fadingIn = true;
-  this.fadeIn = function () {
-    this.fadingIn = this.opacity > this.opacityTresh ? false : true;
-    if (this.fadingIn) {
-      this.opacity += this.do;
-    } else {
-      this.opacity = 1;
-    }
-  };
-
-  this.fadeOut = function () {
-    this.fadingOut = this.opacity < 0 ? false : true;
-    if (this.fadingOut) {
-      this.opacity -= 0.04; // Giảm tốc độ mờ đi để văn bản hiển thị lâu hơn
-      if (this.opacity < 0) {
-        this.opacity = 0;
-      }
-    } else {
-      this.opacity = 0;
-    }
-  };
-};
-
-document.addEventListener("click", function () {
-  var mp3 = document.getElementById("myAudio");
-  if (mp3) {
-      mp3.muted = false; // Bật âm thanh
-      mp3.play().catch(error => console.log("Play error:", error));
+  
+  // Cập nhật kích thước chữ nếu textDisplay đã được khởi tạo
+  if (textDisplay) {
+    var currentText = textDisplay.textContent || texts[currentTextIndex];
+    var fontSize = calculateFontSize(currentText);
+    textDisplay.style.fontSize = fontSize + "px";
   }
-}, { once: true });
-
-
-setTimeout(function () {
-  Clock.init("canvas");
-}, 2000);
+}
