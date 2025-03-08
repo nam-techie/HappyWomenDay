@@ -230,7 +230,9 @@ var Clock = (function () {
 
   var loop = function () {
     ctx.clearRect(0, 0, width, height);
-    // textSize = 36;
+    
+    // Cập nhật kích thước chữ dựa trên văn bản hiện tại
+    textSize = calculateTextSize();
 
     ctx.fillStyle = "rgb(255, 255, 255)";
     ctx.textBaseline = "middle";
@@ -341,21 +343,37 @@ var Clock = (function () {
   };
 
   var setDimensions = function () {
-    // width = window.innerWidth;
-    // height = window.innerHeight;
+    // Điều chỉnh kích thước canvas theo kích thước màn hình
+    var screenWidth = window.innerWidth;
+    var screenHeight = window.innerHeight;
+    
+    // Đặt kích thước tối đa cho canvas
+    var maxWidth = 1400;
+    var maxHeight = 500;
+    
+    // Tính toán kích thước canvas dựa trên kích thước màn hình
+    width = screenWidth > maxWidth ? maxWidth : screenWidth;
+    height = Math.min(screenHeight * 0.6, maxHeight); // Sử dụng 60% chiều cao màn hình hoặc chiều cao tối đa
+    
+    canvas.width = width;
+    canvas.height = height;
+    
+    // Cập nhật kích thước chữ khi kích thước màn hình thay đổi
+    textSize = calculateTextSize();
 
-    canvas.width = window.innerWidth >= 1400 ? 1400 : width;
-    canvas.height = window.innerHeight >= 400 ? 400 : height;
-
-    width = canvas.width;
-    height = canvas.height;
-
+    // Điều chỉnh vị trí canvas
     canvas.style.position = "absolute";
     canvas.style.left = "0px";
     canvas.style.top = "0px";
     canvas.style.bottom = "0px";
     canvas.style.right = "0px";
-    canvas.style.marginTop = window.innerHeight * 0.15 + "px";
+    canvas.style.marginTop = screenHeight * 0.15 + "px";
+    
+    // Căn giữa canvas nếu kích thước màn hình lớn hơn kích thước tối đa
+    if (screenWidth > maxWidth) {
+      canvas.style.left = "50%";
+      canvas.style.transform = "translateX(-50%)";
+    }
   };
 
   var setGradient = function (gradientStops) {
@@ -374,6 +392,27 @@ var Clock = (function () {
     }
   };
 
+  // Thêm hàm để tính toán kích thước chữ dựa trên kích thước màn hình
+  var calculateTextSize = function() {
+    var screenWidth = window.innerWidth;
+    var textLength = text.length;
+    
+    // Điều chỉnh kích thước chữ theo kích thước màn hình và độ dài văn bản
+    if (screenWidth <= 480) {
+      // Điện thoại
+      return Math.min(30, 480 / (textLength * 0.7));
+    } else if (screenWidth <= 768) {
+      // Tablet nhỏ
+      return Math.min(40, 768 / (textLength * 0.7));
+    } else if (screenWidth <= 1024) {
+      // Tablet lớn
+      return Math.min(50, 1024 / (textLength * 0.6));
+    } else {
+      // Laptop và màn hình lớn
+      return Math.min(60, width / (textLength * 0.6));
+    }
+  };
+
   /**
    * Public Methods
    */
@@ -387,6 +426,9 @@ var Clock = (function () {
       setDimensions();
       this.event();
 
+      // Thiết lập kích thước chữ ban đầu dựa trên kích thước màn hình
+      textSize = calculateTextSize();
+
       for (var i = 0; i < PARTICLE_NUM; i++) {
         particles[i] = new Particle(canvas);
       }
@@ -397,6 +439,12 @@ var Clock = (function () {
     event: function () {
       var end = false;
       console.log(texts.length);
+      
+      // Thêm sự kiện resize để cập nhật kích thước chữ khi thay đổi kích thước màn hình
+      window.addEventListener('resize', function() {
+        textSize = calculateTextSize();
+      }, false);
+      
       document.addEventListener(
         "click",
         function () {
@@ -412,6 +460,9 @@ var Clock = (function () {
       
             // Hiển thị dòng "Còn một bất ngờ nữa..."
             text = "Còn một bất ngờ nữa...";
+            // Cập nhật kích thước chữ khi văn bản thay đổi
+            textSize = calculateTextSize();
+            
             setTimeout(function () {
               // Đếm ngược từ 3, 2, 1
               let countdown = ["3", "2", "1"];
@@ -420,6 +471,8 @@ var Clock = (function () {
               let countdownInterval = setInterval(function () {
                 if (countIndex < countdown.length) {
                   text = countdown[countIndex]; // Hiển thị số đếm ngược
+                  // Cập nhật kích thước chữ khi văn bản thay đổi
+                  textSize = calculateTextSize();
                   countIndex++;
                 } else {
                   clearInterval(countdownInterval); // Dừng đếm ngược
@@ -432,6 +485,8 @@ var Clock = (function () {
             return;
           }
           text = texts[textNum];
+          // Cập nhật kích thước chữ khi văn bản thay đổi
+          textSize = calculateTextSize();
         },
         false
       );
